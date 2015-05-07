@@ -55,3 +55,8 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# User defined
+.scrapecache/
+google_scraper.db
+images/*
