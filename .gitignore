@@ -59,4 +59,4 @@ target/
 # User defined
 .scrapecache/
 google_scraper.db
-images/*
+images/

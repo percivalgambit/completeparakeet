@@ -1,8 +1,9 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-from flask import Flask, render_template, send_file
+from flask import Flask, render_template, send_from_directory
 
+from collections import OrderedDict
 from GoogleScraper import scrape_with_config, GoogleSearchError
 import os
 import random
@@ -17,7 +18,7 @@ def complete_parakeet():
 @app.route('/parakeet')
 def get_parakeet():
     image = random.choice(os.listdir('images/'))
-    send_file(image, mimetype='image/jpeg')
+    return send_from_directory('images', image, as_attachment=True, attachment_filename="parakeet")
 
 def scrape_images(keyword, num_pages):
     target_directory = 'images/'
@@ -42,7 +43,7 @@ def scrape_images(keyword, num_pages):
 
     for serp in search.serps:
         image_urls.extend(
-            [link.link for link in serp.links]
+            list(OrderedDict.fromkeys([link.link for link in serp.links]))
         )
 
     import threading,requests, os, urllib
@@ -94,5 +95,5 @@ def scrape_images(keyword, num_pages):
 
 if __name__ == '__main__':
     if '--no-scrape' not in sys.argv:
-        scrape_images('"cute parakeet"', 5)
-    app.run()
+        scrape_images('"cute parakeet"', 10)
+    app.run(debug=True)
