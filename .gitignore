@@ -60,3 +60,4 @@ target/
 .scrapecache/
 google_scraper.db
 images/
+upload/

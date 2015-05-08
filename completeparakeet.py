@@ -16,21 +16,55 @@ UPLOAD_FOLDER = 'upload'
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+completed_items = []
+
 @app.route('/', methods=['GET', 'POST'])
 def complete_parakeet():
+    context = {}
+    context['completed_items'] = completed_items
     if request.method == 'GET':
-        return render_template('index.html', show_parakeet=False)
+        context['parakeet_img'] = ''
     if request.method == 'POST':
+        itemNumberName = request.form['itemNumberName']
+        description = request.form['description']
         file = request.files['file']
+        if not itemNumberName:
+            context['invalid_form_msg'] = 'You must include an item number/name'
+            return render_template('index.html', **context)
+
+        # make a directory for the uploads
+        try:
+            os.mkdir(app.config['UPLOAD_FOLDER'])
+        except FileExistsError:
+            pass
+
+        try:
+            os.mkdir(os.path.join(app.config['UPLOAD_FOLDER'], itemNumberName))
+        except FileExistsError:
+            context['invalid_form_msg'] = 'That item has already been completed!'
+            return render_template('index.html', **context)
+
+        new_item = {'itemNumberName': itemNumberName}
+
+        if description:
+            with open(os.path.join(app.config['UPLOAD_FOLDER'], itemNumberName, 'description.txt'), 'w') as descriptionFile:
+                descriptionFile.write(description)
+            item['description'] = description
+
         if file:
-            # make a directory for the uploads
-            try:
-                os.mkdir(UPLOAD_FOLDER)
-            except FileExistsError:
-                pass
             filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        return render_template('index.html', show_parakeet=True)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], itemNumberName, filename))
+            item['file_link'] = os.path.join(app.config['UPLOAD_FOLDER'], itemNumberName, filename)
+
+        completed_items.append(new_item)
+
+        image = os.path.join(IMAGES_FOLDER, random.choice(os.listdir(IMAGES_FOLDER)))
+        context['parakeet_img'] = image
+    return render_template('index.html', **context)
+
+@app.route('/images/<image>')
+def get_parakeet_img(image):
+    return send_from_directory(IMAGES_FOLDER, image, as_attachment=True, attachment_filename="parakeet")
 
 @app.route('/parakeet')
 def get_parakeet():
@@ -108,8 +142,24 @@ def scrape_images(keyword, num_pages):
     for t in threads:
         t.join()
 
+def get_completed_item(itemNumberName):
+    item_data = {}
+    item_data['itemNumberName'] = itemNumberName
+    for data in os.listdir(os.path.join(app.config['UPLOAD_FOLDER'], item)):
+        if data == 'description.txt':
+            description = ''
+            with open(os.path.join(app.config['UPLOAD_FOLDER'], itemNumberName, data), 'r') as description_file:
+                description = description_file.read()
+            item_data['description'] = description
+        else:
+            item_data['file_link'] = os.path.join(app.config['UPLOAD_FOLDER'], itemNumberName, data)
+    return item_data
 
 if __name__ == '__main__':
     if '--no-scrape' not in sys.argv:
         scrape_images('"cute parakeet"', 10)
+
+    if os.path.exists(app.config['UPLOAD_FOLDER']):
+        for item in os.listdir(app.config['UPLOAD_FOLDER']):
+            completed_items.append(get_completed_item(item))
     app.run(debug=True)
