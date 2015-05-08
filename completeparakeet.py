@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-from flask import Flask, render_template, send_from_directory
+from flask import Flask, render_template, send_from_directory, request, redirect, url_for
+from werkzeug import secure_filename
 
 from collections import OrderedDict
 from GoogleScraper import scrape_with_config, GoogleSearchError
@@ -9,19 +10,34 @@ import os
 import random
 import sys
 
-app = Flask(__name__)
+IMAGES_FOLDER = 'images'
+UPLOAD_FOLDER = 'upload'
 
-@app.route('/')
+app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+@app.route('/', methods=['GET', 'POST'])
 def complete_parakeet():
-    return render_template('index.html')
+    if request.method == 'GET':
+        return render_template('index.html', show_parakeet=False)
+    if request.method == 'POST':
+        file = request.files['file']
+        if file:
+            # make a directory for the uploads
+            try:
+                os.mkdir(UPLOAD_FOLDER)
+            except FileExistsError:
+                pass
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        return render_template('index.html', show_parakeet=True)
 
 @app.route('/parakeet')
 def get_parakeet():
-    image = random.choice(os.listdir('images/'))
-    return send_from_directory('images', image, as_attachment=True, attachment_filename="parakeet")
+    image = random.choice(os.listdir(IMAGES_FOLDER))
+    return send_from_directory(IMAGES_FOLDER, image, as_attachment=True, attachment_filename="parakeet")
 
 def scrape_images(keyword, num_pages):
-    target_directory = 'images/'
 
     config = {
         'SCRAPING': {
@@ -68,14 +84,14 @@ def scrape_images(keyword, num_pages):
 
     # make a directory for the results
     try:
-        os.mkdir(target_directory)
+        os.mkdir(IMAGES_FOLDER)
     except FileExistsError:
         pass
 
     # fire up 100 threads to get the images
     num_threads = 100
 
-    threads = [FetchResource('images/', []) for i in range(num_threads)]
+    threads = [FetchResource(IMAGES_FOLDER, []) for i in range(num_threads)]
 
     while image_urls:
         for t in threads:

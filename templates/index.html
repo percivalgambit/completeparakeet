@@ -5,5 +5,14 @@
 </head>
 <body>
     <h1>Complete? Parakeet!</h1>
-    <img src='parakeet'>
+    <form action="" method=post enctype=multipart/form-data>
+        Description:<br>
+        <input type="text" name="description">
+        Upload:<br>
+        <input type=file name=file>
+        <input type =submit value=Upload>
+    </form>
+    {% if show_parakeet %}
+    <img src="parakeet">
+    {% endif %}
 </body>
