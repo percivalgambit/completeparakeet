@@ -162,4 +162,4 @@ if __name__ == '__main__':
     if os.path.exists(app.config['UPLOAD_FOLDER']):
         for item in os.listdir(app.config['UPLOAD_FOLDER']):
             completed_items.append(get_completed_item(item))
-    app.run(debug=True)
+    app.run()
