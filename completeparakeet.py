@@ -68,8 +68,8 @@ def get_parakeet_img(image):
 
 @app.route('/parakeet')
 def get_parakeet():
-    image = random.choice(os.listdir(IMAGES_FOLDER))
-    return send_from_directory(IMAGES_FOLDER, image, as_attachment=True, attachment_filename="parakeet")
+    image = os.path.join(IMAGES_FOLDER, random.choice(os.listdir(IMAGES_FOLDER)))
+    return render_template('parakeet.html', image=image)
 
 def scrape_images(keyword, num_pages):
 
@@ -163,4 +163,4 @@ if os.path.exists(app.config['UPLOAD_FOLDER']):
 if __name__ == '__main__':
     if '--no-scrape' not in sys.argv:
         scrape_images('"cute parakeet"', 10)
-    app.run(debug=True)
+    app.run()
