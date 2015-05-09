@@ -2,47 +2,256 @@
 <html lang="en">
 <head>
     <title>Complete? Parakeet!</title>
+    <style type="text/css">
+        body {
+            background: #6AAFDA
+        }
+
+        .gradientBoxesWithOuterShadows {
+            background-color: white;
+
+            /* outer shadows  (note the rgba is red, green, blue, alpha) */
+            -webkit-box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.4);
+            -moz-box-shadow: 0px 1px 6px rgba(23, 69, 88, .5);
+
+            /* rounded corners */
+            -webkit-border-radius: 12px;
+            -moz-border-radius: 7px;
+            border-radius: 7px;
+
+            /* gradients */
+            background: -webkit-gradient(linear, left top, left bottom,
+            color-stop(0%, white), color-stop(15%, white), color-stop(100%, #D7E9F5));
+            background: -moz-linear-gradient(top, white 0%, white 55%, #D5E4F3 130%);
+        }
+
+        #main {
+            height: 500px;
+            width: 1000px;
+            padding: 20px;
+            margin: 30px auto;
+            overflow: auto;
+        }
+
+        #about {
+            height: 80px;
+            width: 1000px;
+            padding: 20px;
+            margin: 30px auto;
+            font-family:Arial, Helvetica, sans-serif;
+        }
+
+        #parakeetDiv {
+            width: 450px;
+            height: 420px;
+            float: right;
+            text-align: center;
+        }
+
+        #parakeet {
+            margin: auto;
+            width: 400px;
+            height: 400px;
+        }
+
+        #itemNumberName {
+            height: 20px;
+            width: 500px;
+        }
+
+        #description {
+            height: 100px;
+            width: 500px;
+        }
+
+        h1 {
+            font: 400 40px/0.5 'Berkshire Swash', Helvetica, sans-serif;
+            color: #2b2b2b;
+            text-shadow: 1px 1px 0px #ededed, 4px 4px 0px rgba(0,0,0,0.15);
+        }
+
+        input {
+            margin-bottom: 2em;
+        }
+
+        textarea {
+            margin-bottom: 2em;
+        }
+
+        #fileUpload {
+            margin-bottom: 7em;
+        }
+
+        #completedItems {
+            margin:20px;
+        }
+
+        table {
+            font-family:Arial, Helvetica, sans-serif;
+            color:#666;
+            font-size:12px;
+            text-shadow: 1px 1px 0px #fff;
+            background:#eaebec;
+            border:#ccc 1px solid;
+
+            -moz-border-radius:3px;
+            -webkit-border-radius:3px;
+            border-radius:3px;
+
+            -moz-box-shadow: 0 1px 2px #d1d1d1;
+            -webkit-box-shadow: 0 1px 2px #d1d1d1;
+            box-shadow: 0 1px 2px #d1d1d1;
+        }
+
+        table th {
+            padding:21px 25px 22px 25px;
+            border-top:1px solid #fafafa;
+            border-bottom:1px solid #e0e0e0;
+
+            background: #ededed;
+            background: -webkit-gradient(linear, left top, left bottom, from(#ededed), to(#ebebeb));
+            background: -moz-linear-gradient(top,  #ededed,  #ebebeb);
+        }
+
+        table th:first-child {
+            text-align: left;
+            padding-left:20px;
+        }
+
+        table tr:first-child th:first-child {
+            -moz-border-radius-topleft:3px;
+            -webkit-border-top-left-radius:3px;
+            border-top-left-radius:3px;
+        }
+
+        table tr:first-child th:last-child {
+            -moz-border-radius-topright:3px;
+            -webkit-border-top-right-radius:3px;
+            border-top-right-radius:3px;
+        }
+
+        table tr {
+            text-align: center;
+            padding-left:20px;
+        }
+
+        table td:first-child {
+            text-align: left;
+            padding-left:20px;
+            border-left: 0;
+        }
+
+        table td {
+            padding:18px;
+            border-top: 1px solid #ffffff;
+            border-bottom:1px solid #e0e0e0;
+            border-left: 1px solid #e0e0e0;
+
+            background: #fafafa;
+            background: -webkit-gradient(linear, left top, left bottom, from(#fbfbfb), to(#fafafa));
+            background: -moz-linear-gradient(top,  #fbfbfb,  #fafafa);
+        }
+
+        table tr.even td {
+            background: #f6f6f6;
+            background: -webkit-gradient(linear, left top, left bottom, from(#f8f8f8), to(#f6f6f6));
+            background: -moz-linear-gradient(top,  #f8f8f8,  #f6f6f6);
+        }
+
+        table tr:last-child td {
+            border-bottom:0;
+        }
+
+        table tr:last-child td:first-child {
+            -moz-border-radius-bottomleft:3px;
+            -webkit-border-bottom-left-radius:3px;
+            border-bottom-left-radius:3px;
+        }
+
+        table tr:last-child td:last-child {
+            -moz-border-radius-bottomright:3px;
+            -webkit-border-bottom-right-radius:3px;
+            border-bottom-right-radius:3px;
+        }
+
+        table tr:hover td {
+            background: #f2f2f2;
+            background: -webkit-gradient(linear, left top, left bottom, from(#f2f2f2), to(#f0f0f0));
+            background: -moz-linear-gradient(top,  #f2f2f2,  #f0f0f0);
+        }
+
+        #downloadImg {
+            height: 50px;
+            width: 50px;
+        }
+
+        #submitButton {
+            height: 30px;
+            width: 100px;
+            font-size: 100%;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-    <h1>Complete? Parakeet!</h1>
-    {% if invalid_form_msg %}
-    <p>{{ invalid_form_msg }}</p>
-    {% endif %}
-    <form name="scavItemForm" action="" onsubmit="return validateForm()" method=post enctype=multipart/form-data>
-        Item Number/Name:<br>
-        <input type="text" name="itemNumberName"><br>
-        Description:<br>
-        <input type="text" name="description"><br>
-        Upload:<br>
-        <input type="file" name="file">
-        <input type ="submit" value="Upload">
-    </form>
-    {% if parakeet_img %}
-    <img src={{ parakeet_img }}><br>
-    {% endif %}
-    {% if completed_items %}
-    <h2>Completed Items:</h2>
-    <table>
-        <tr>
-            <td>Item Number/Name</td>
-            <td>Description</td>
-            <td>File</td>
-        </tr>
-    {% endif %}
-    {% for item in completed_items %}
-        <tr>
-            <td>{{ item.itemNumberName }}</td>
-            <td>{{ item.description }}</td>
-            <td>
-                {% if item.file_link %}
-                <a href={{ item.file_link }} download>
-                    <img src="static/download_img.png">
-                </a>
-                {% endif %}
-            </td>
-        </tr>
-    {% endfor %}
-    {% if completed_items %}
-    </table>
-    {% endif %}
+    <div id="main" class="gradientBoxesWithOuterShadows">
+        <h1>Complete? Parakeet!</h1>
+        {% if invalid_form_msg %}
+        <p>{{ invalid_form_msg }}</p>
+        {% endif %}
+        <div id="parakeetDiv">
+        {% if parakeet_img %}
+            <img id="parakeet" src={{ parakeet_img }}>
+        {% endif %}
+        </div>
+        <form name="parakeetForm" id="parakeetForm" action="" method=post enctype=multipart/form-data>
+            Item Number/Name:<br>
+            <input type="text" name="itemNumberName" id="itemNumberName"><br>
+            Description:<br>
+            <textarea name="description" id="description" form="parakeetForm"></textarea><br>
+            Attach file:<br>
+            <input type="file" name="file" id="fileUpload"><br>
+            <input type ="submit" id="submitButton" value="Submit">
+        </form>
+    </div>
+    <div id="about" class="gradientBoxesWithOuterShadows">
+        <p>Complete? Parakeet! was created by Lee Ehudin for Scav 2015.</p>
+        <p>Images are randomly selected from Google, Bing, and Yahoo search results, tagged with the search term of "cute parakeets"</p>
+    </div>
+    <div id="completedItems">
+        {% if completed_items %}
+        <h2>Completed Items:</h2>
+        <table cellspacing='0'>
+
+            <!-- Table Header -->
+            <thead>
+                <tr>
+                    <th>Item Number/Name</th>
+                    <th>Description</th>
+                    <th>File</th>
+                </tr>
+            </thead>
+            <!-- Table Header -->
+
+            <!-- Table Body -->
+            <tbody>
+        {% endif %}
+        {% for item in completed_items %}
+            <tr class="{{ loop.cycle('odd', 'even') }}">
+                <td>{{ item.itemNumberName }}</td>
+                <td>{{ item.description }}</td>
+                <td>
+                    {% if item.file_link %}
+                    <a href={{ item.file_link }} download>
+                        <img id="downloadImg" src="static/download_img.png">
+                    </a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        {% if completed_items %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
 </body>

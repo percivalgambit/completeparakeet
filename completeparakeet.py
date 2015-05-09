@@ -163,4 +163,4 @@ if os.path.exists(app.config['UPLOAD_FOLDER']):
 if __name__ == '__main__':
     if '--no-scrape' not in sys.argv:
         scrape_images('"cute parakeet"', 10)
-    app.run()
+    app.run(debug=True)
