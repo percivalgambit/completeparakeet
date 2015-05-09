@@ -39,23 +39,15 @@ def complete_parakeet():
         except FileExistsError:
             pass
 
-        try:
-            os.mkdir(os.path.join(app.config['UPLOAD_FOLDER'], itemNumberName)[:64])
-        except FileExistsError:
-            context['invalid_form_msg'] = 'That item has already been completed!'
-            return render_template('index.html', **context)
-
         new_item = {'itemNumberName': itemNumberName}
 
         if description:
-            with open(os.path.join(app.config['UPLOAD_FOLDER'], itemNumberName, 'description.txt'), 'w') as descriptionFile:
-                descriptionFile.write(description)
             new_item['description'] = description
 
         if file:
             filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], itemNumberName, filename))
-            new_item['file_link'] = os.path.join(app.config['UPLOAD_FOLDER'], itemNumberName, filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            new_item['file_link'] = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
         completed_items.append(new_item)
 
@@ -155,11 +147,6 @@ def get_completed_item(itemNumberName):
         else:
             item_data['file_link'] = os.path.join(app.config['UPLOAD_FOLDER'], itemNumberName, data)
     return item_data
-
-
-if os.path.exists(app.config['UPLOAD_FOLDER']):
-        for item in os.listdir(app.config['UPLOAD_FOLDER']):
-            completed_items.append(get_completed_item(item))
 
 if __name__ == '__main__':
     if '--no-scrape' not in sys.argv:
