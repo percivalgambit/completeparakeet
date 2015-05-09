@@ -15,6 +15,7 @@ UPLOAD_FOLDER = 'upload'
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['IMAGES_FOLDER'] = IMAGES_FOLDER
 
 completed_items = []
 
@@ -39,7 +40,7 @@ def complete_parakeet():
             pass
 
         try:
-            os.mkdir(os.path.join(app.config['UPLOAD_FOLDER'], itemNumberName))
+            os.mkdir(os.path.join(app.config['UPLOAD_FOLDER'], itemNumberName)[:64])
         except FileExistsError:
             context['invalid_form_msg'] = 'That item has already been completed!'
             return render_template('index.html', **context)
@@ -163,4 +164,4 @@ if os.path.exists(app.config['UPLOAD_FOLDER']):
 if __name__ == '__main__':
     if '--no-scrape' not in sys.argv:
         scrape_images('"cute parakeet"', 10)
-    app.run()
+    app.run(debug=True)
