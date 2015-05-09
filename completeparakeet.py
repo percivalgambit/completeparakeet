@@ -49,12 +49,12 @@ def complete_parakeet():
         if description:
             with open(os.path.join(app.config['UPLOAD_FOLDER'], itemNumberName, 'description.txt'), 'w') as descriptionFile:
                 descriptionFile.write(description)
-            item['description'] = description
+            new_item['description'] = description
 
         if file:
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], itemNumberName, filename))
-            item['file_link'] = os.path.join(app.config['UPLOAD_FOLDER'], itemNumberName, filename)
+            new_item['file_link'] = os.path.join(app.config['UPLOAD_FOLDER'], itemNumberName, filename)
 
         completed_items.append(new_item)
 
@@ -155,11 +155,12 @@ def get_completed_item(itemNumberName):
             item_data['file_link'] = os.path.join(app.config['UPLOAD_FOLDER'], itemNumberName, data)
     return item_data
 
+
+if os.path.exists(app.config['UPLOAD_FOLDER']):
+        for item in os.listdir(app.config['UPLOAD_FOLDER']):
+            completed_items.append(get_completed_item(item))
+
 if __name__ == '__main__':
     if '--no-scrape' not in sys.argv:
         scrape_images('"cute parakeet"', 10)
-
-    if os.path.exists(app.config['UPLOAD_FOLDER']):
-        for item in os.listdir(app.config['UPLOAD_FOLDER']):
-            completed_items.append(get_completed_item(item))
     app.run()
